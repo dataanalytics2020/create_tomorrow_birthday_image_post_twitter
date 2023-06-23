@@ -225,7 +225,7 @@ img_resize.save(concat_image_path)
 
 
 birthday = extract_universary_df['日付'].iloc[0]
-text = f'\n\n{birthday} 今日は何の日？'
+text = f'\n\n{birthday} 明日は何の日？'
 text += '\n◆キャラクターの誕生日一覧'
 virtday_count_dict = dict(charactor_birthday_df['登場作品'].value_counts())
 birthday_dict_tuple = sorted(virtday_count_dict.items(), key=lambda x:x[1], reverse=True)
@@ -233,9 +233,9 @@ for affitation in birthday_dict_tuple:
     print(affitation[0])
     extract_df = charactor_birthday_df[charactor_birthday_df['登場作品'] == affitation[0]]
     print(extract_df)
-    text += f'\n{affitation[0]}'
+    text += f'\n📍{affitation[0]}'
     for index, row in extract_df.iterrows():
-        text += f'\n・{row["キャラクター名"]}'
+        text += f'\n｜{row["キャラクター名"]}'
 print(text) 
 
 text += '\n\n◆声優の誕生日一覧'
@@ -244,9 +244,9 @@ for affitation in cv_birthday_df['声優'].unique():
     print(affitation[0])
     extract_df = cv_birthday_df[cv_birthday_df['声優'] == affitation]
     print(extract_df)
-    text += f'\n{affitation}'
+    text += f'\n📍{affitation}'
     for index, row in extract_df.iterrows():
-        text += f'\n・{row["キャラクター名"]} {row["登場作品"]}'
+        text += f'\n｜{row["キャラクター名"]} {row["登場作品"]}'
 print(text)
 
 post_line_image_and_text(text,concat_image_path, os.getenv('LINE_TOKEN'))
