@@ -249,4 +249,4 @@ for affitation in cv_birthday_df['声優'].unique():
         text += f'\n｜{row["キャラクター名"]} {row["登場作品"]}'
 print(text)
 
-post_line_image_and_text(text,concat_image_path, os.getenv('LINE_TOKEN'))
+post_line_image_and_text(extract_universary_df['日付'].iloc[0],concat_image_path, os.getenv('LINE_TOKEN'))
