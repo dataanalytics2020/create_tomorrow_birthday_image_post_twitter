@@ -10,6 +10,31 @@ import datetime
 from dotenv import load_dotenv
 load_dotenv(".env")
 
+def keepAspectResize(path, size):
+
+    # 画像の読み込み
+    image = Image.open(path)
+
+    # サイズを幅と高さにアンパック
+    width, height = size
+
+    # 矩形の幅と画像の幅の比率を計算
+    x_ratio = width / image.width
+
+    # 矩形の高さと画像の高さの比率を計算
+    y_ratio = height / image.height
+
+    # 画像の幅と高さ両方に小さい方の比率を掛けてリサイズ後のサイズを計算
+    if x_ratio < y_ratio:
+        resize_size = (width, round(image.height * x_ratio))
+    else:
+        resize_size = (round(image.width * y_ratio), height)
+
+    # リサイズ後の画像サイズにリサイズ
+    resized_image = image.resize(resize_size)
+
+    return resized_image
+
 def post_line_image_and_text(message,image_path,line_token):
     url = "https://notify-api.line.me/api/notify"
     headers = {"Authorization" : "Bearer "+ line_token}
@@ -21,7 +46,7 @@ def post_line_image_and_text(message,image_path,line_token):
 
 
 today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=1)
+tomorrow = today + datetime.timedelta(days=7)
 url = f'https://sulocale.sulopachinews.com/archives/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88/{tomorrow.strftime("%m%d")}'
 print(url)
 birthday_dfs = pd.read_html(url)
@@ -32,9 +57,12 @@ birthday_dfs
 
 charactor_birthday_df = pd.DataFrame(columns=[ 'キャラクター名','登場作品'])
 for text in birthday_dfs[0][0][1:]:
-    text = text.replace(')','）').replace('？','')
+    text = text.replace(')','）').replace('？','').replace('(','（')
     charactor_name = text.split('（')[0].replace(' ','').replace(' ','')
-    charactor_affiliation = text.split('（')[1].replace('(仮','(仮)').replace('）','')
+    try:
+        charactor_affiliation = text.split('（')[1].replace('(仮','(仮)').replace('）','')
+    except:
+        charactor_affiliation = '-'
     print(charactor_name,charactor_affiliation)
     charactor_birthday_df = pd.concat([charactor_birthday_df,pd.DataFrame({'キャラクター名':[charactor_name],'登場作品':[charactor_affiliation]})],axis=0)
     
@@ -67,9 +95,6 @@ print(universary_df)
 tomorrow_str:str = tomorrow.strftime("%m月").lstrip('0') + tomorrow.strftime("%d日").lstrip('0') 
 extract_universary_df = universary_df[universary_df['日付'].str.contains(tomorrow_str)]
 extract_universary_df
-
-
-
 
 def get_concat_h_multi_resize(im_list, resample=Image.BICUBIC):
     min_height = min(im.height for im in im_list)
@@ -117,10 +142,10 @@ def create_charactor_anime_cell_image(_df,image_name):
         elif df_columns_list[column_number] == '何の日？':
             font = ImageFont.truetype('font/NotoSansJP-Black.otf', 13)
             cell_width = 500
-            cell_height = 25
+            cell_height = 60
         elif df_columns_list[column_number] == '日付':
             cell_width = 100
-            cell_height = 25
+            cell_height = 60
         else:
             cell_width = 300
             font = ImageFont.truetype('font/NotoSansJP-Black.otf', 20)
@@ -171,7 +196,19 @@ def create_charactor_anime_cell_image(_df,image_name):
                 im = Image.new('RGB', (cell_width, cell_height), (221, 255, 255)) 
                 draw = ImageDraw.Draw(im)  # Drawオブジェクトを生成  
                 font = ImageFont.truetype('font/NotoSansJP-Black.otf', 13)
-                draw.multiline_text((cell_width/2,cell_height/2), f'{record[column_number]}', fill=(0,0,0), font=font,anchor="mm",align ="center") 
+                output_text = ''
+                text_list = record[column_number].split('。')
+                for i,text in enumerate(text_list):
+                    i += 1
+                    #print(text)
+                    if i > 9:
+                        break
+                    if i % 3 == 0:
+                        output_text += text + ',\n'
+                    else:
+                        output_text += text + ','
+                print(output_text)
+                draw.multiline_text((cell_width/2,cell_height/2), f'{output_text}', fill=(0,0,0), font=font,anchor="mm",align ="center") 
                 w, h = im.size
                 draw.rectangle((0, 0, w-1, h-1), outline = (0,0,0))
                 height_concat_lists.append(im)# イメージオブジェクトの生成(黒のベタ画像)
@@ -219,8 +256,12 @@ get_concat_v_multi_resize(completed_height_concat_lists).save(concat_image_path)
 img = Image.open(concat_image_path)  # イメージを開く
 print("元の画像サイズ　width: {}, height: {}".format(img.size[0], img.size[1]))  # 元の画像のサイズ出力
 # 画像を指定したサイズに変更
-img_resize = img.resize((1500, 2000))  # 画像のリサイズ
-print("指定サイズ　width: {}, height: {}".format(img_resize.size[0], img_resize.size[1]))  # 画像のサイズ出力
+#img_resize = img.resize((1500, 2000))  # 画像のリサイズ
+
+# 画像のアスペクト比を維持したまま、指定したサイズに収まるようにリサイズ
+img_resize = img.resize((2000, int(2000 * img.size[1] / img.size[0])))  # 画像のリサイズ
+print("変更後の画像サイズ　width: {}, height: {}".format(img_resize.size[0], img_resize.size[1]))  # 変更後の画像のサイズ出力
+
 img_resize.save(concat_image_path) 
 
 
