@@ -46,7 +46,7 @@ def post_line_image_and_text(message,image_path,line_token):
 
 
 today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=7)
+tomorrow = today + datetime.timedelta(days=1)
 url = f'https://sulocale.sulopachinews.com/archives/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88/{tomorrow.strftime("%m%d")}'
 print(url)
 birthday_dfs = pd.read_html(url)
