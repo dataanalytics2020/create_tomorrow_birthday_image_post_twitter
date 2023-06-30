@@ -201,14 +201,14 @@ def create_charactor_anime_cell_image(_df,image_name):
                 for i,text in enumerate(text_list):
                     i += 1
                     #print(text)
-                    if i > 9:
+                    if i > 11:
                         break
-                    if i % 3 == 0:
-                        output_text += text + ',\n'
+                    if i % 4 == 0:
+                        output_text += '\n'+text + ','
                     else:
                         output_text += text + ','
                 print(output_text)
-                draw.multiline_text((cell_width/2,cell_height/2), f'{output_text}', fill=(0,0,0), font=font,anchor="mm",align ="center") 
+                draw.multiline_text((cell_width/2,cell_height/2), f'{output_text}', spacing= 0,fill=(0,0,0), font=font,anchor="mm",align ="center") 
                 w, h = im.size
                 draw.rectangle((0, 0, w-1, h-1), outline = (0,0,0))
                 height_concat_lists.append(im)# イメージオブジェクトの生成(黒のベタ画像)
