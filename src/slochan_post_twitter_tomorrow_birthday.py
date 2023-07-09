@@ -46,7 +46,7 @@ def post_line_image_and_text(message,image_path,line_token):
 
 
 today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=1)
+tomorrow = today + datetime.timedelta(days=0)
 url = f'https://sulocale.sulopachinews.com/archives/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88/{tomorrow.strftime("%m%d")}'
 print(url)
 birthday_dfs = pd.read_html(url)
@@ -161,6 +161,7 @@ def create_charactor_anime_cell_image(_df,image_name):
         height_concat_lists.append(im)
         name = '' #cv_birthday_df['声優'].iloc[0]
         count = 1
+        seiyuu_count = 1
         for index_number ,(i,record) in enumerate(_df.iterrows()):
             #print('df_columns_list[column_number]',df_columns_list[column_number])
             if index_number == 0 and df_columns_list[column_number] == '声優':
@@ -168,16 +169,22 @@ def create_charactor_anime_cell_image(_df,image_name):
                 continue
             if df_columns_list[column_number] == '声優':
                 print('name',name)
+                if seiyuu_count % 2 != 0:
+                    im = Image.new('RGB', (cell_width, (count*cell_height)), (255, 255, 255))
+                    draw = ImageDraw.Draw(im) 
+                else:
+                    im = Image.new('RGB', (cell_width, (count*cell_height)), (221, 255, 255))
+                    draw = ImageDraw.Draw(im)
                 print('record[column_number',record[column_number])
                 font = ImageFont.truetype('font/NotoSansJP-Black.otf', 32)
+                seiyuu_count += 1
                 if name == f'{record[column_number]}':
                     print('同じ名前',count)
                     count += 1
                 else:
                     print('違う名前',count)
                     print((count*cell_height))
-                    im = Image.new('RGB', (cell_width, (count*cell_height)), (255, 255, 255))
-                    draw = ImageDraw.Draw(im) 
+
                     w, h = im.size
                     draw.multiline_text(((cell_width)/2,(count*cell_height)/2), f'{name}', fill=(0,0,0), font=font,anchor="mm",align ="center")
                     draw.rectangle((0, 0, w-1, h-1), outline = (0,0,0))
