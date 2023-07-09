@@ -46,7 +46,7 @@ def post_line_image_and_text(message,image_path,line_token):
 
 
 today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=0)
+tomorrow = today + datetime.timedelta(days=1)
 url = f'https://sulocale.sulopachinews.com/archives/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88/{tomorrow.strftime("%m%d")}'
 print(url)
 birthday_dfs = pd.read_html(url)
@@ -123,7 +123,7 @@ def get_concat_v_multi_resize(im_list, resample=Image.BICUBIC):
 def create_charactor_anime_cell_image(_df,image_name):
     global create_df_cell_image_path
     width_concat_lists = []
-    font = ImageFont.truetype('font/NotoSansJP-Black.otf', 20)
+    #font = ImageFont.truetype('font/NotoSansJP-Black.otf', 20)
     df_columns_list = list(_df.columns)
     cell_height = 40
     for column_number in range(len(_df.columns)):
@@ -131,25 +131,30 @@ def create_charactor_anime_cell_image(_df,image_name):
         #print(column_number)
         #print(df_columns_list[column_number])
         if df_columns_list[column_number] == 'キャラクター名':
-            
-            cell_width = 500
+            font = ImageFont.truetype('font/NotoSansJP-Black.otf', 26)
+            cell_width = 600
+            cell_height = 40
         elif df_columns_list[column_number] == '登場作品':
-            cell_width = 500
+            font = ImageFont.truetype('font/NotoSansJP-Black.otf', 26)
+            cell_width = 600
+            cell_height = 40
+
         elif df_columns_list[column_number] == '声優':
             font = ImageFont.truetype('font/NotoSansJP-Black.otf', 38)
-            cell_width = 500
-            cell_height = 60
+            cell_width = 600
+            cell_height = 50
         elif df_columns_list[column_number] == '何の日？':
-            font = ImageFont.truetype('font/NotoSansJP-Black.otf', 13)
+            font = ImageFont.truetype('font/NotoSansJP-Black.otf', 20)
             cell_width = 500
             cell_height = 60
         elif df_columns_list[column_number] == '日付':
-            cell_width = 100
+            cell_width = 120
             cell_height = 60
+            font = ImageFont.truetype('font/NotoSansJP-Black.otf', 20)
         else:
             cell_width = 300
             font = ImageFont.truetype('font/NotoSansJP-Black.otf', 20)
-            cell_height = 40
+            cell_height = 60
         #print(cell_width,cell_height)
         im = Image.new('RGB', (cell_width, cell_height), (0, 0, 200))  # イメージオブジェクトの生成(黒のベタ画像)
         draw = ImageDraw.Draw(im)  # Drawオブジェクトを生成  
@@ -164,41 +169,52 @@ def create_charactor_anime_cell_image(_df,image_name):
         seiyuu_count = 1
         for index_number ,(i,record) in enumerate(_df.iterrows()):
             #print('df_columns_list[column_number]',df_columns_list[column_number])
+            
             if index_number == 0 and df_columns_list[column_number] == '声優':
-                name = f'{record[column_number]}'
-                continue
-            if df_columns_list[column_number] == '声優':
-                print('name',name)
-                if seiyuu_count % 2 != 0:
+                if len(_df) != 1:
+                    name = f'{record[column_number]}'
+                    continue
+                else:
+                    name = f'{record[column_number]}'
                     im = Image.new('RGB', (cell_width, (count*cell_height)), (255, 255, 255))
                     draw = ImageDraw.Draw(im) 
-                else:
-                    im = Image.new('RGB', (cell_width, (count*cell_height)), (221, 255, 255))
-                    draw = ImageDraw.Draw(im)
+                    w, h = im.size
+                    draw.multiline_text(((cell_width)/2,(count*cell_height)/2), f'{name[:15]}', fill=(0,0,0), font=font,anchor="mm",align ="center")
+                    draw.rectangle((0, 0, w-1, h-1), outline = (0,0,0))
+                    height_concat_lists.append(im)
+                    count = 1
+                    continue
+
+            if df_columns_list[column_number] == '声優':
+                print('name',name)
+
+                im = Image.new('RGB', (cell_width, (count*cell_height)), (255, 255, 255))
+                draw = ImageDraw.Draw(im) 
                 print('record[column_number',record[column_number])
                 font = ImageFont.truetype('font/NotoSansJP-Black.otf', 32)
-                seiyuu_count += 1
+
                 if name == f'{record[column_number]}':
                     print('同じ名前',count)
                     count += 1
                 else:
                     print('違う名前',count)
                     print((count*cell_height))
-
                     w, h = im.size
-                    draw.multiline_text(((cell_width)/2,(count*cell_height)/2), f'{name}', fill=(0,0,0), font=font,anchor="mm",align ="center")
+                    draw.multiline_text(((cell_width)/2,(count*cell_height)/2), f'{name[:15]}', fill=(0,0,0), font=font,anchor="mm",align ="center")
                     draw.rectangle((0, 0, w-1, h-1), outline = (0,0,0))
                     height_concat_lists.append(im)
                     count = 1
+                    
                 name = f'{record[column_number]}'
                 if index_number+1 == len(cv_birthday_df):
                     im = Image.new('RGB', (cell_width, (count*cell_height)), (255, 255, 255))
                     draw = ImageDraw.Draw(im) 
                     w, h = im.size
-                    draw.multiline_text(((cell_width)/2,(count*cell_height)/2), f'{name}', fill=(0,0,0), font=font,anchor="mm",align ="center")
+                    draw.multiline_text(((cell_width)/2,(count*cell_height)/2), f'{name[:15]}', fill=(0,0,0), font=font,anchor="mm",align ="center")
                     draw.rectangle((0, 0, w-1, h-1), outline = (0,0,0))
                     height_concat_lists.append(im)
                     count = 1
+                seiyuu_count += 1
             elif df_columns_list[column_number] == '何の日？':
                 im = Image.new('RGB', (cell_width, cell_height), (221, 255, 255)) 
                 draw = ImageDraw.Draw(im)  # Drawオブジェクトを生成  
@@ -211,9 +227,9 @@ def create_charactor_anime_cell_image(_df,image_name):
                     if i > 11:
                         break
                     if i % 4 == 0:
-                        output_text += '\n'+text + ','
+                        output_text += '\n'+ text + ' '
                     else:
-                        output_text += text + ','
+                        output_text += text + ' '
                 print(output_text)
                 draw.multiline_text((cell_width/2,cell_height/2), f'{output_text}', spacing= 0,fill=(0,0,0), font=font,anchor="mm",align ="center") 
                 w, h = im.size
@@ -226,8 +242,14 @@ def create_charactor_anime_cell_image(_df,image_name):
                 else:
                     im = Image.new('RGB', (cell_width, cell_height), (221, 255, 255))  # イメージオブジェクトの生成(黒のベタ画像)
                 draw = ImageDraw.Draw(im)  # Drawオブジェクトを生成  
+                name = record[column_number]
+                print
+                if 16 < len(name):
+                    name = name[:16] + '\n' + name[16:]
+                    font = ImageFont.truetype('font/NotoSansJP-Black.otf', 20)
                 
-                draw.multiline_text((cell_width/2,cell_height/2), f'{record[column_number]}', fill=(0,0,0), font=font,anchor="mm",align ="center") 
+
+                draw.multiline_text((cell_width/2,cell_height/2), f'{name}', fill=(0,0,0),spacing= -6, font=font,anchor="mm",align ="center") 
                 w, h = im.size
                 draw.rectangle((0, 0, w-1, h-1), outline = (0,0,0))
                 height_concat_lists.append(im)
