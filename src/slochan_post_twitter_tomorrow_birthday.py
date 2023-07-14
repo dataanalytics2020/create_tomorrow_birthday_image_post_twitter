@@ -42,7 +42,7 @@ def post_line_image_and_text(message,image_path,line_token):
     #imagesフォルダの中のgazo.jpg
     print('image_path',image_path)
     files = {"imageFile":open(image_path,'rb')}
-    post = requests.post(url ,headers = headers ,params=payload,files=files) 
+    post = requests.post(url ,headers = headers ,params=payload,files=files)
 
 
 today = datetime.date.today()
