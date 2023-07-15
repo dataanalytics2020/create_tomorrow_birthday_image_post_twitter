@@ -82,7 +82,10 @@ def scraping_yesterday_groupby_prefecture_tenpo_data(prefecture:str) -> str:
     return output_text
 
 for prefecture in ['神奈川県','埼玉県','千葉県','東京都']:
-    output_text = scraping_yesterday_groupby_prefecture_tenpo_data(prefecture)
-    post_line_text(output_text,os.getenv('LINE_TOKEN'))
-    time.sleep(3)
-
+    try:
+        output_text = scraping_yesterday_groupby_prefecture_tenpo_data(prefecture)
+        post_line_text(output_text,os.getenv('LINE_TOKEN'))
+        time.sleep(3)
+    except Exception as e:
+        post_line_text(e,os.getenv('LINE_TOKEN'))
+    
