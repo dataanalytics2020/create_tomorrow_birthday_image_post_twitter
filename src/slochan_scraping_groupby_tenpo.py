@@ -33,7 +33,7 @@ def scraping_yesterday_groupby_prefecture_tenpo_data(prefecture:str) -> str:
     date = yesterday.strftime('%Y-%m-%d')
     print(date)
     quote_prefecture = urllib.parse.quote(prefecture)
-    url = f'https://ana-slo.com/{date}-{quote_prefecture }-hallpickup/'
+    url = f'https://ana-slo.com/{date}-{quote_prefecture}-hallpickup/'
     #print(url)    res = requests.get(url_1)
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.text, 'html.parser')
@@ -81,11 +81,24 @@ def scraping_yesterday_groupby_prefecture_tenpo_data(prefecture:str) -> str:
     #print(output_text)
     return output_text
 
-for prefecture in ['神奈川県','埼玉県','千葉県','東京都']:
+
+
+import time         # タイマー用
+import traceback    # 例外検知用
+for _ in range(5):  # 最大3回実行
     try:
-        output_text = scraping_yesterday_groupby_prefecture_tenpo_data(prefecture)
-        post_line_text(output_text,os.getenv('LINE_TOKEN'))
-        time.sleep(3)
+        for prefecture in ['神奈川県','埼玉県','千葉県','東京都']:
+            output_text = scraping_yesterday_groupby_prefecture_tenpo_data(prefecture)
+            post_line_text(output_text,os.getenv('LINE_TOKEN'))
+            time.sleep(3)
+
     except Exception as e:
-        post_line_text(e,os.getenv('LINE_TOKEN'))
+        post_line_text(f"{e} 失敗しました。もう一度繰り返します",os.getenv('LINE_TOKEN'))
+        print(traceback.format_exc()) # 例外の内容を表示
+        time.sleep(3600) # 適当に待つ
+    else:
+        print("成功しました。ループを終了します。")
+        break
+else:
+    post_line_text("最大試行回数に達しました。処理を中断します",os.getenv('LINE_TOKEN'))
     
