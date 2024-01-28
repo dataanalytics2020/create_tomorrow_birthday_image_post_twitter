@@ -254,7 +254,7 @@ for day in range(1,5):
                 charactor_affiliation = '-'
             print(charactor_name,charactor_affiliation)
             charactor_birthday_df = pd.concat([charactor_birthday_df,pd.DataFrame({'キャラクター名':[charactor_name],'登場作品':[charactor_affiliation]})],axis=0)
-            
+        charactor_birthday_df = charactor_birthday_df[charactor_birthday_df['登場作品'] != '-']
         cv_birthday_df = pd.DataFrame(columns=[ '声優','キャラクター名','登場作品'])
         for i in range(1,len(birthday_dfs)):
             temp__birthday_df = birthday_dfs[i]
