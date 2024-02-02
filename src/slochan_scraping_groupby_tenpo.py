@@ -89,16 +89,16 @@ for _ in range(5):  # 最大3回実行
     try:
         for prefecture in ['神奈川県','埼玉県','千葉県','東京都']:
             output_text = scraping_yesterday_groupby_prefecture_tenpo_data(prefecture)
-            post_line_text(output_text,os.getenv('LINE_TOKEN'))
+            post_line_text(output_text,os.getenv('SLOCHAN_LINE_TOKEN'))
             time.sleep(3)
 
     except Exception as e:
-        post_line_text(f"{e} 失敗しました。もう一度繰り返します",os.getenv('LINE_TOKEN'))
+        post_line_text(f"{e} 失敗しました。もう一度繰り返します",os.getenv('SLOCHAN_LINE_TOKEN'))
         print(traceback.format_exc()) # 例外の内容を表示
         time.sleep(3600) # 適当に待つ
     else:
         print("成功しました。ループを終了します。")
         break
 else:
-    post_line_text("最大試行回数に達しました。処理を中断します",os.getenv('LINE_TOKEN'))
+    post_line_text("最大試行回数に達しました。処理を中断します",os.getenv('SLOCHAN_LINE_TOKEN'))
     

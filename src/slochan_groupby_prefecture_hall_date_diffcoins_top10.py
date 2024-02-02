@@ -62,7 +62,7 @@ for prefecture_name in ['埼玉県', '千葉県', '神奈川県','東京都']:#
         #display(extract_prefecture_df)
         extract_prefecture_df.sort_values('ave_diffcoins', ascending=False, inplace=True)
         if prefecture_name == '東京都':
-            compare_diffcoins = 50
+            compare_diffcoins = 100
         else:
             compare_diffcoins = 0
         extract_prefecture_df_1 = extract_prefecture_df[extract_prefecture_df['ave_diffcoins'] > compare_diffcoins]
@@ -100,19 +100,22 @@ for prefecture_name in ['埼玉県', '千葉県', '神奈川県','東京都']:#
             data_text += f'{emoji}{tenpo_name}\n 総差{sum_medal} 平均{ave_medal} {daisuu}\n\n'
         #print(data_text)
 
-        output_text = f'''〈{date}速報〉\n【{prefecture_name} 平均差枚ランキング】※{compare_diffcoins}枚以上抜粋\n\n'''
+        output_text = f'''〈{date}速報〉\n【{prefecture_name} 平均差枚ランキング】※{compare_diffcoins}枚以上抜粋\n'''
         #print(output_text)
         output_text += data_text
         print(output_text)
 
         #文字が900文字を超えたら送信
         if len(output_text) < 900:
-            post_line_text(output_text,SLOCHAN_LINE_TOKEN)
+            concat_text_1 = ''
+            for text_line1 in output_text.split('\n\n'):
+                concat_text_1 += text_line1 + '\n'
+            post_line_text(concat_text_1,SLOCHAN_LINE_TOKEN)
             #time.sleep(10)
         else:
             concat_text = ''
-            for text_line in output_text.split('\n\n'):
-                concat_text += text_line + '\n'
+            for text_line2 in output_text.split('\n\n'):
+                concat_text += text_line2 + '\n'
                 if len(concat_text) > 900:
                     post_line_text(concat_text,SLOCHAN_LINE_TOKEN)
                     concat_text = ''

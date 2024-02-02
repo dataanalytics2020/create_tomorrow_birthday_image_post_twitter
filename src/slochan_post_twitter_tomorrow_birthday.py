@@ -220,7 +220,7 @@ def post_line_text(message,line_token):
     payload = {"message" :  message}
     post = requests.post(url ,headers = headers ,params=payload)
 
-
+print('start',"slochan_post_twitter_tomorrow_birthday.py",datetime.datetime.now(),os.getenv('SLOCHAN_LINE_TOKEN'))
 for day in range(1,5):
     try:
         today = datetime.date.today()
@@ -345,11 +345,11 @@ for day in range(1,5):
         #         text += f'\n｜{row["キャラクター名"]} {row["登場作品"]}'
         # print(text)
 
-        post_line_image_and_text(birthday,concat_image_path, os.getenv('LINE_TOKEN'))
+        post_line_image_and_text(birthday,concat_image_path, os.getenv('SLOCHAN_LINE_TOKEN'))
         #break
     except Exception as e:
         print(e)
         error_text = traceback.format_exc()
-        post_line_text(f"{error_text} 失敗しました。",os.getenv('LINE_TOKEN'))
+        post_line_text(f"{error_text} 失敗しました。",os.getenv('SLOCHAN_LINE_TOKEN'))
         print(traceback.format_exc())
         #break
