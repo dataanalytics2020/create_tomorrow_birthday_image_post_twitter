@@ -100,7 +100,7 @@ for prefecture_name in ['埼玉県', '千葉県', '神奈川県','東京都']:#
             data_text += f'{emoji}{tenpo_name}\n 総差{sum_medal} 平均{ave_medal} {daisuu}\n\n'
         #print(data_text)
 
-        output_text = f'''〈{date}速報〉\n【{prefecture_name} 平均差枚ランキング】※{compare_diffcoins}枚以上抜粋\n'''
+        output_text = f'''〈{date}速報〉\n【{prefecture_name} 平均差枚ランキング】※{compare_diffcoins}枚以上抜粋\n\n\n'''
         #print(output_text)
         output_text += data_text
         print(output_text)
