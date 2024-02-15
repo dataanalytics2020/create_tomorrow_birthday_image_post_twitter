@@ -16,6 +16,13 @@ import os
 import traceback
 import mysql
 import mysql.connector
+from oauth2client.service_account import ServiceAccountCredentials
+import requests
+import gspread
+import datetime
+import pandas as pd
+from io import StringIO
+import os
 from dotenv import load_dotenv
 load_dotenv(".env")
 
@@ -39,6 +46,27 @@ def post_line_text(message,SLOCHAN_LINE_TOKEN):
     headers = {"Authorization" : "Bearer "+ SLOCHAN_LINE_TOKEN}
     payload = {"message" :  message}
     post = requests.post(url ,headers = headers ,params=payload)
+
+def read_spreadsheet_convert_to_df(worksheet_title_name:str) -> pd.DataFrame:
+    '''
+    スプレッドシートから読み込む
+    '''
+    SERVICE_ACCOUT_FILE_PATH = os.getenv('SERVICE_ACCOUT_FILE_PATH')
+    SCOPE = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUT_FILE_PATH, SCOPE)
+    gs = gspread.authorize(credentials)
+    SPREADSHEET_KEY = os.getenv('SPREADSHEET_KEY')
+    worksheet = gs.open_by_key(SPREADSHEET_KEY).worksheet(worksheet_title_name)
+    _df = pd.DataFrame(worksheet.get_all_values())
+    _df.columns = list(_df.loc[0, :])
+    _df.drop(0, inplace=True)
+    _df.reset_index(inplace=True)
+    _df.drop('index', axis=1, inplace=True)
+    return  _df
+
+hall_name_convert_df = read_spreadsheet_convert_to_df('日別差枚店舗名変換シート')
+#辞書型に変換する
+convert_hall_name_dict = dict(hall_name_convert_df [["hall_name", "変換後店舗名"]].values)
 
 # MySQLに接続
 conn = get_cursor()
@@ -82,6 +110,10 @@ for prefecture_name in ['埼玉県', '千葉県', '神奈川県','東京都']:#
         for emoji ,(i,row) in zip(emoji_list,extract_prefecture_df_1.iterrows()):
             #print(i,row)
             tenpo_name = row['hall_name']
+            try:
+                tenpo_name = convert_hall_name_dict[tenpo_name]
+            except:
+                pass
             
             if '本店' in tenpo_name:
                 tenpo_name = tenpo_name.replace('本店','')
