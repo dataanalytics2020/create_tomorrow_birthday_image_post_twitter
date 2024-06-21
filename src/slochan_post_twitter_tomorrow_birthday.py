@@ -249,7 +249,7 @@ for day in range(1,5):
             text = text.replace(')','）').replace('？','').replace('(','（')
             charactor_name = text.split('（')[0].replace(' ','').replace(' ','')
             try:
-                charactor_affiliation = text.split('（')[1].replace('(仮','(仮)').replace('）','')
+                charactor_affiliation = text.split('（')[1].replace('(仮','(仮)').replace('）','').replace('「とは」','')
             except:
                 charactor_affiliation = '-'
             print(charactor_name,charactor_affiliation)
